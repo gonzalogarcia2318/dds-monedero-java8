@@ -38,25 +38,12 @@ public class Movimiento {
   // Type tests? Preguntando si es deposito o extraccion segun una propiedad.
   // Se podria hacer 2 objetos: Deposito y Extraccion que hereden de Movimiento
   // Contra: no se podria saber la cantidad de depositos o extracciones si solamente hay una lista de movimientos.
+  // Prefiero dejarlo asi para poder saber la cantidad de extracciones y depositos.
   public boolean isDeposito() {
     return esDeposito;
   }
+
   public boolean isExtraccion() {
     return !esDeposito;
-  }
-
-  // Misplaced method. Este metodo tendria que ir solamente en Cuenta.
-  public void agregateA(Cuenta cuenta) {
-    cuenta.setSaldo(calcularValor(cuenta));
-    cuenta.agregarMovimiento(fecha, monto, esDeposito);
-  }
-
-  // Misplaced method. Este metodo tendria que ir en Cuenta, pasandole el Movimiento como parametro.
-  public double calcularValor(Cuenta cuenta) {
-    if (esDeposito) {
-      return cuenta.getSaldo() + getMonto();
-    } else {
-      return cuenta.getSaldo() - getMonto();
-    }
   }
 }

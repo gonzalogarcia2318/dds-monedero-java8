@@ -14,8 +14,8 @@ public class Cuenta {
   private double saldo = 0;
   private List<Movimiento> movimientos = new ArrayList<>();
 
-  private static final int MAXIMA_CANTIDAD_DEPOSITOS_DIARIOS  = 3;
-  private static final double MAXIMO_MONTO_EXTRACCION_DIARIO  = 1000;
+  private static final int MAXIMA_CANTIDAD_DEPOSITOS_DIARIOS = 3;
+  private static final double MAXIMO_MONTO_EXTRACCION_DIARIO = 1000;
 
   public Cuenta() {
     saldo = 0;
@@ -32,7 +32,9 @@ public class Cuenta {
       throw new MaximaCantidadDepositosException("Ya excedio los " + 3 + " depositos diarios");
     }
 
-    new Movimiento(LocalDate.now(), cuanto, true).agregateA(this);
+    Movimiento movimiento = new Movimiento(LocalDate.now(), cuanto, true);
+    this.agregarMovimiento(movimiento);
+    this.setSaldo(calcularValor(movimiento));
   }
 
   public void sacar(double cuanto) {
@@ -48,12 +50,13 @@ public class Cuenta {
       throw new MaximoExtraccionDiarioException("No puede extraer mas de $ " + MAXIMO_MONTO_EXTRACCION_DIARIO
           + " diarios, límite: " + limite);
     }
-    new Movimiento(LocalDate.now(), cuanto, false).agregateA(this);
+
+    Movimiento movimiento = new Movimiento(LocalDate.now(), cuanto, false);
+    this.agregarMovimiento(movimiento);
+    this.setSaldo(calcularValor(movimiento));
   }
 
-  // Lista de parametros cuando en realidad es un objeto Movimiento.
-  public void agregarMovimiento(LocalDate fecha, double cuanto, boolean esDeposito) {
-    Movimiento movimiento = new Movimiento(fecha, cuanto, esDeposito);
+  public void agregarMovimiento(Movimiento movimiento) {
     movimientos.add(movimiento);
   }
 
@@ -70,8 +73,16 @@ public class Cuenta {
     }
   }
 
-  private long cantidadDepositos(){
+  private long cantidadDepositos() {
     return getMovimientos().stream().filter(Movimiento::isDeposito).count();
+  }
+
+  private double calcularValor(Movimiento movimiento) {
+    if (movimiento.isDeposito()) {
+      return getSaldo() + movimiento.getMonto();
+    } else {
+      return getSaldo() - movimiento.getMonto();
+    }
   }
 
   public void setMovimientos(List<Movimiento> movimientos) {
