@@ -25,14 +25,9 @@ public class Cuenta {
     saldo = montoInicial;
   }
 
-  public void setMovimientos(List<Movimiento> movimientos) {
-    this.movimientos = movimientos;
-  }
-
   public void poner(double cuanto) {
     this.validarMontoNegativo(cuanto);
 
-    // Usar constantes en vez de numeros literales.
     if (this.cantidadDepositos() >= MAXIMA_CANTIDAD_DEPOSITOS_DIARIOS) {
       throw new MaximaCantidadDepositosException("Ya excedio los " + 3 + " depositos diarios");
     }
@@ -62,10 +57,9 @@ public class Cuenta {
     movimientos.add(movimiento);
   }
 
-  // El filter usa una funcion que ya esta definida en movimiento. Repite logica
   public double getMontoExtraidoA(LocalDate fecha) {
     return getMovimientos().stream()
-        .filter(movimiento -> !movimiento.isDeposito() && movimiento.getFecha().equals(fecha))
+        .filter(movimiento -> movimiento.fueExtraido(fecha))
         .mapToDouble(Movimiento::getMonto)
         .sum();
   }
@@ -78,6 +72,10 @@ public class Cuenta {
 
   private long cantidadDepositos(){
     return getMovimientos().stream().filter(Movimiento::isDeposito).count();
+  }
+
+  public void setMovimientos(List<Movimiento> movimientos) {
+    this.movimientos = movimientos;
   }
 
   public List<Movimiento> getMovimientos() {
