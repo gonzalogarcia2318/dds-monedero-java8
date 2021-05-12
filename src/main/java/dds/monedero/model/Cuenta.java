@@ -27,6 +27,7 @@ public class Cuenta {
   }
 
   public void poner(double cuanto) {
+    // Validacion repetida en metodo poner y sacar.
     if (cuanto <= 0) {
       throw new MontoNegativoException(cuanto + ": el monto a ingresar debe ser un valor positivo");
     }
@@ -39,6 +40,7 @@ public class Cuenta {
   }
 
   public void sacar(double cuanto) {
+    // Validacion repetida en metodo poner y sacar.
     if (cuanto <= 0) {
       throw new MontoNegativoException(cuanto + ": el monto a ingresar debe ser un valor positivo");
     }
@@ -54,11 +56,13 @@ public class Cuenta {
     new Movimiento(LocalDate.now(), cuanto, false).agregateA(this);
   }
 
+  // Lista de parametros cuando en realidad es un objeto Movimiento.
   public void agregarMovimiento(LocalDate fecha, double cuanto, boolean esDeposito) {
     Movimiento movimiento = new Movimiento(fecha, cuanto, esDeposito);
     movimientos.add(movimiento);
   }
 
+  // El filter usa una funcion que ya esta definida en movimiento. Repite logica
   public double getMontoExtraidoA(LocalDate fecha) {
     return getMovimientos().stream()
         .filter(movimiento -> !movimiento.isDeposito() && movimiento.getFecha().equals(fecha))
