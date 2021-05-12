@@ -14,6 +14,9 @@ public class Cuenta {
   private double saldo = 0;
   private List<Movimiento> movimientos = new ArrayList<>();
 
+  private static final int MAXIMA_CANTIDAD_DEPOSITOS_DIARIOS  = 3;
+  private static final double MAXIMO_MONTO_EXTRACCION_DIARIO  = 1000;
+
   public Cuenta() {
     saldo = 0;
   }
@@ -30,7 +33,7 @@ public class Cuenta {
     this.validarMontoNegativo(cuanto);
 
     // Usar constantes en vez de numeros literales.
-    if (getMovimientos().stream().filter(movimiento -> movimiento.isDeposito()).count() >= 3) {
+    if (this.cantidadDepositos() >= MAXIMA_CANTIDAD_DEPOSITOS_DIARIOS) {
       throw new MaximaCantidadDepositosException("Ya excedio los " + 3 + " depositos diarios");
     }
 
@@ -43,11 +46,11 @@ public class Cuenta {
     if (getSaldo() - cuanto < 0) {
       throw new SaldoMenorException("No puede sacar mas de " + getSaldo() + " $");
     }
+
     double montoExtraidoHoy = getMontoExtraidoA(LocalDate.now());
-    // Usar constantes en vez de numeros literales.
-    double limite = 1000 - montoExtraidoHoy;
+    double limite = MAXIMO_MONTO_EXTRACCION_DIARIO - montoExtraidoHoy;
     if (cuanto > limite) {
-      throw new MaximoExtraccionDiarioException("No puede extraer mas de $ " + 1000
+      throw new MaximoExtraccionDiarioException("No puede extraer mas de $ " + MAXIMO_MONTO_EXTRACCION_DIARIO
           + " diarios, límite: " + limite);
     }
     new Movimiento(LocalDate.now(), cuanto, false).agregateA(this);
@@ -71,6 +74,10 @@ public class Cuenta {
     if (monto <= 0) {
       throw new MontoNegativoException(monto + ": el monto a ingresar debe ser un valor positivo");
     }
+  }
+
+  private long cantidadDepositos(){
+    return getMovimientos().stream().filter(Movimiento::isDeposito).count();
   }
 
   public List<Movimiento> getMovimientos() {
