@@ -26,31 +26,14 @@ public class Cuenta {
   }
 
   public void poner(double cuanto) {
-    this.validarMontoNegativo(cuanto);
-
-    if (this.cantidadDepositos() >= MAXIMA_CANTIDAD_DEPOSITOS_DIARIOS) {
-      throw new MaximaCantidadDepositosException("Ya excedio los " + 3 + " depositos diarios");
-    }
-
+    this.validarDeposito(cuanto);
     Deposito deposito = new Deposito(LocalDate.now(), cuanto);
     this.agregarMovimiento(deposito);
     this.setSaldo(calcularValor(deposito));
   }
 
   public void sacar(double cuanto) {
-    this.validarMontoNegativo(cuanto);
-
-    if (getSaldo() - cuanto < 0) {
-      throw new SaldoMenorException("No puede sacar mas de " + getSaldo() + " $");
-    }
-
-    double montoExtraidoHoy = getMontoExtraidoA(LocalDate.now());
-    double limite = MAXIMO_MONTO_EXTRACCION_DIARIO - montoExtraidoHoy;
-    if (cuanto > limite) {
-      throw new MaximoExtraccionDiarioException("No puede extraer mas de $ " + MAXIMO_MONTO_EXTRACCION_DIARIO
-          + " diarios, límite: " + limite);
-    }
-
+    this.validarExtraccion(cuanto);
     Extraccion extraccion = new Extraccion(LocalDate.now(), cuanto);
     this.agregarMovimiento(extraccion);
     this.setSaldo(calcularValor(extraccion));
@@ -70,6 +53,29 @@ public class Cuenta {
   private void validarMontoNegativo(double monto) {
     if (monto <= 0) {
       throw new MontoNegativoException(monto + ": el monto a ingresar debe ser un valor positivo");
+    }
+  }
+
+  private void validarExtraccion(double cuanto){
+    this.validarMontoNegativo(cuanto);
+
+    if (getSaldo() - cuanto < 0) {
+      throw new SaldoMenorException("No puede sacar mas de " + getSaldo() + " $");
+    }
+
+    double montoExtraidoHoy = getMontoExtraidoA(LocalDate.now());
+    double limite = MAXIMO_MONTO_EXTRACCION_DIARIO - montoExtraidoHoy;
+    if (cuanto > limite) {
+      throw new MaximoExtraccionDiarioException("No puede extraer mas de $ " + MAXIMO_MONTO_EXTRACCION_DIARIO
+          + " diarios, límite: " + limite);
+    }
+  }
+
+  private void validarDeposito(double cuanto){
+    this.validarMontoNegativo(cuanto);
+
+    if (this.cantidadDepositos() >= MAXIMA_CANTIDAD_DEPOSITOS_DIARIOS) {
+      throw new MaximaCantidadDepositosException("Ya excedio los " + 3 + " depositos diarios");
     }
   }
 
