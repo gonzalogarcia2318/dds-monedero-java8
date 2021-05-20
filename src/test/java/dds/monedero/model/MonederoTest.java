@@ -108,21 +108,21 @@ public class MonederoTest {
   }
 
   @Test
-  public void MovimientoDepositoFiguraComoDepositadoEnElMismoDia() {
-    Movimiento deposito = new Movimiento(LocalDate.now(), 1, true);
+  public void DepositoFiguraComoDepositadoEnElMismoDia() {
+    Deposito deposito = new Deposito(LocalDate.now(), 1);
     assertTrue(deposito.fueDepositado(LocalDate.now()));
   }
 
   @Test
-  public void MovimientoExtraccionFiguraComoExtraidoEnElMismoDia() {
-    Movimiento extraccion = new Movimiento(LocalDate.now(), 1, false);
+  public void ExtraccionFiguraComoExtraidoEnElMismoDia() {
+    Extraccion extraccion = new Extraccion(LocalDate.now(), 1);
     assertTrue(extraccion.fueExtraido(LocalDate.now()));
   }
 
   @Test
   public void SePuedenSetearMovimientosAUnaCuenta(){
-    Movimiento deposito = new Movimiento(LocalDate.now(), 1, true);
-    Movimiento extraccion = new Movimiento(LocalDate.now(), 1, false);
+    Deposito deposito = new Deposito(LocalDate.now(), 1);
+    Extraccion extraccion = new Extraccion(LocalDate.now(), 1);
     cuenta.setMovimientos(Arrays.asList(deposito, extraccion));
     //
     assertEquals(2, cuenta.getMovimientos().size());
